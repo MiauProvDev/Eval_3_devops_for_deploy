@@ -1,0 +1,44 @@
+name: Integracion Continua (CI)
+
+# Se activa en push o PR hacia main/develop
+# Solo valida que las imagenes Docker compilen correctamente.
+# NO sube imagenes, NO despliega nada.
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    name: Verificar compilacion de imagenes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener codigo fuente
+        uses: actions/checkout@v4
+
+      - name: Compilar imagen del servicio de ventas
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t devops-u2-backend-ventas:ci \
+            ./back-Ventas_SpringBoot/Springboot-API-REST
+
+      - name: Compilar imagen del servicio de despachos
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t devops-u2-backend-despachos:ci \
+            ./back-Despachos_SpringBoot/Springboot-API-REST-DESPACHO
+
+      - name: Compilar imagen del cliente web
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t devops-u2-frontend:ci \
+            ./front_despacho
